@@ -27,6 +27,7 @@
 #include <QMatrix4x4>
 #include <KConfig>
 #include <KConfigGroup>
+#include <iostream>
 #include "shapecorners.h"
 
 KWIN_EFFECT_FACTORY_SUPPORTED_ENABLED(ShapeCornersFactory,
@@ -90,6 +91,7 @@ void ShapeCornersEffect::readConfig()
 	KConfigGroup generalGroup(&config, "General");
 
 	QList<int> cornerSizes = generalGroup.readEntry("Radius", QList<int>{10, 10, 10, 10});
+	QList<float> shadowStrengthList = generalGroup.readEntry("CornerShadowTransparency", QList<float>{0.0, 0.0, 0.0, 0.0});
 
 	QString type = generalGroup.readEntry("Type", QString("rounded"));
 
@@ -140,6 +142,12 @@ void ShapeCornersEffect::readConfig()
 		}
 
 		m_size = cornerSizes;
+	}
+
+	// Set shadowStrengthArr according to shadowStrengthList
+	// Entries go TL, TR, BR, BL. If an entry is missing it will default to 0
+	for (int i = 0; i < shadowStrengthList.size(); i++) {
+		shadowStrengthArr[i] = shadowStrengthList[i];
 	}
 }
 
@@ -274,6 +282,7 @@ void ShapeCornersEffect::paintWindow(KWin::EffectWindow *w, int mask, QRegion re
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	const int mvpMatrixLocation = m_shader->uniformLocation("modelViewProjectionMatrix");
+	const int shadowStrengthLocation = m_shader->uniformLocation("shadow_strength");
 	KWin::ShaderManager *sm = KWin::ShaderManager::instance();
 	sm->pushShader(m_shader /*KWin::ShaderTrait::MapTexture*/);
 
@@ -285,7 +294,7 @@ void ShapeCornersEffect::paintWindow(KWin::EffectWindow *w, int mask, QRegion re
 	};
 
 	if (squareOnFullscreen && geo.left() == 0 && geo.top() == 0 && geo.bottom() + 1 == s.height() && geo.right() + 1 == s.width()) {
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < NTex; i++) {
 			cornerConditions[i] = false;
 		}
 	}
@@ -299,6 +308,7 @@ void ShapeCornersEffect::paintWindow(KWin::EffectWindow *w, int mask, QRegion re
 		modelViewProjection.ortho(0, s.width(), s.height(), 0, 0, 65535);
 		modelViewProjection.translate(rect[i].x(), rect[i].y());
 		m_shader->setUniform(mvpMatrixLocation, modelViewProjection);
+		m_shader->setUniform(shadowStrengthLocation, shadowStrengthArr[i]);
 
 		glActiveTexture(GL_TEXTURE1);
 		m_tex[i]->bind();

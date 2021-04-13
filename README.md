@@ -5,7 +5,7 @@ KDE effect rounds/chisels corners of your windows.
 
 Fork of https://github.com/khanhas/ShapeCorners which is a fork of https://sourceforge.net/projects/shapecorners/.
 
-This fork adds the `SquareOnFullscreen`-Option with a whooping 10 lines of code.
+This fork adds the `SquareOnFullscreen`-Option with a whooping 10 lines of code. Also it is now possible to darken the cut out part of a window corner by a certain amount. This will make the round corners almost indistinguishable from window shadows (you can still see it when you look reaaallly closely).
 
 ### Features:
 - Customizable via config file
@@ -38,6 +38,7 @@ It should be now activated.
 ```ini
 [General]
 Radius=10
+CornerShadowTransparency=0.0,0.0,0.2,0.2
 Type=Rounded
 SquareAtScreenEdge=false
 SquareOnFullscreen=false
@@ -51,6 +52,7 @@ Blacklist=
     - `Radius=10,20`: Top Left and Bottom Right has 10; Top Right and Bottom Left has 20
     - `Radius=30,40,50`: Top Left has 30; Top Right and Bottom Left has 40; Bottom Right has 50
     - `Radius=20,50,30,10`: Top Left has 20; Top Right has 50; Bottom Right has 30; Bottom Left has 10
+- `CornerShadowTransparency': Sets fake shadow transparency of the corners in the same order as `Radius`. Values not set default to 0.0 (no darkening)
 - `Type`: `Rounded` or `Chiseled`
 - `SquareAtScreenEdge`: Square off corner at when window edge is at screen edge. Boolean `true` or `false`.
 - `SquareOnFullscreen`: Square off all corners when application is running in fullscreen. Boolean `true` or `false`

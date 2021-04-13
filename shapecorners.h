@@ -60,6 +60,8 @@ private:
     bool squareAtEdge = false;
     bool squareOnFullscreen = false;
 
+    float shadowStrengthArr[4] = { 0, 0, 0, 0 };
+
     QStringList whitelist;
     QStringList blacklist;
 
