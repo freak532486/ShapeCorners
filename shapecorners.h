@@ -58,6 +58,7 @@ private:
     CornerType m_type = CornerType::Normal;
     
     bool squareAtEdge = false;
+    bool squareOnFullscreen = false;
 
     QStringList whitelist;
     QStringList blacklist;

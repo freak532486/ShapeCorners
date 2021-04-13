@@ -94,6 +94,7 @@ void ShapeCornersEffect::readConfig()
 	QString type = generalGroup.readEntry("Type", QString("rounded"));
 
 	squareAtEdge = generalGroup.readEntry("SquareAtScreenEdge", false);
+	squareOnFullscreen = generalGroup.readEntry("SquareOnFullscreen", false);
 	filterShadow = generalGroup.readEntry("FilterShadow", false);
 
 	whitelist = generalGroup.readEntry("Whitelist", QStringList());
@@ -280,7 +281,14 @@ void ShapeCornersEffect::paintWindow(KWin::EffectWindow *w, int mask, QRegion re
 		squareAtEdge && (geo.left() == 0 || geo.top() == 0),
 		squareAtEdge && ((geo.right() + 1) == s.width() || geo.top() == 0),
 		squareAtEdge && ((geo.right() + 1) == s.width() || (geo.bottom() + 1) == s.height()),
-		squareAtEdge && (geo.left() == 0 || (geo.bottom() + 1) == s.height())};
+		squareAtEdge && (geo.left() == 0 || (geo.bottom() + 1) == s.height())
+	};
+
+	if (squareOnFullscreen && geo.left() == 0 && geo.top() == 0 && geo.bottom() + 1 == s.height() && geo.right() + 1 == s.width()) {
+		for (int i = 0; i < 4; i++) {
+			cornerConditions[i] = false;
+		}
+	}
 
 	for (int i = 0; i < NTex; ++i)
 	{
